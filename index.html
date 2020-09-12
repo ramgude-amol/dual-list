@@ -1,0 +1,155 @@
+<!doctype html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"></script>
+  <script src="jquery-simple-multi-select.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/4.3.1/flatly/bootstrap.min.css">
+  <style>
+    body {
+      background: linear-gradient(35deg, rgba(253, 253, 253, 0.03) 0%, rgba(253, 253, 253, 0.03) 53%, rgba(109, 109, 109, 0.03) 53%, rgba(109, 109, 109, 0.03) 59%, rgba(228, 228, 228, 0.03) 59%, rgba(228, 228, 228, 0.03) 66%, rgba(42, 42, 42, 0.03) 66%, rgba(42, 42, 42, 0.03) 95%, rgba(165, 165, 165, 0.03) 95%, rgba(165, 165, 165, 0.03) 100%), linear-gradient(205deg, rgba(62, 62, 62, 0.03) 0%, rgba(62, 62, 62, 0.03) 31%, rgba(200, 200, 200, 0.03) 31%, rgba(200, 200, 200, 0.03) 41%, rgba(30, 30, 30, 0.03) 41%, rgba(30, 30, 30, 0.03) 47%, rgba(151, 151, 151, 0.03) 47%, rgba(151, 151, 151, 0.03) 60%, rgba(95, 95, 95, 0.03) 60%, rgba(95, 95, 95, 0.03) 100%), linear-gradient(30deg, rgba(7, 7, 7, 0.03) 0%, rgba(7, 7, 7, 0.03) 19%, rgba(63, 63, 63, 0.03) 19%, rgba(63, 63, 63, 0.03) 33%, rgba(175, 175, 175, 0.03) 33%, rgba(175, 175, 175, 0.03) 37%, rgba(244, 244, 244, 0.03) 37%, rgba(244, 244, 244, 0.03) 60%, rgba(177, 177, 177, 0.03) 60%, rgba(177, 177, 177, 0.03) 100%), linear-gradient(90deg, rgb(162, 162, 162), rgb(229, 229, 229));
+    }
+
+    .container {
+      margin: 150px auto;
+    }
+  </style>
+  <title> Item Management Project </title>
+</head>
+
+<body>
+  <div id="jquery-script-menu">
+
+  </div>
+  <div class="container">
+    <h1> Item Management Project</h1>
+    <form id="dual-list-form">
+      <div class="input-group">
+        <div class="form-group has-feedback has-clear">
+          <input type="text" class="form-control" name="input_add_item" id="input_add_item"
+            placeholder="Enter text here">
+        </div>
+        <span class="input-group-btn">
+          &nbsp;&nbsp;&nbsp;
+          <button type="button" class="btn btn-primary" id="add_item">Add</button>
+        </span>
+      </div>
+      <!-- <br> -->
+      <div id="callback">
+        <div>
+          <select id="callback_src" multiple style="width: 7em; height: 10em;" class="form-control">
+          </select>
+        </div>
+        <div>
+          <div><button type="button" id="callback_adder" class="btn btn-primary mb-1">&gt;</button></div>
+          <div><button type="button" id="callback_remover" class="btn btn-primary mb-1">&lt;</button></div>
+        </div>
+        <div>
+          <select id="callback_dst" multiple style="width: 7em; height: 10em;" class="form-control">
+          </select>
+        </div>
+      </div>
+
+    </form>
+    <script>
+
+      $('#dual-list-form').submit(function () {
+        $('#add_item').trigger('click');
+        return false;
+      })
+
+      $('#callback').simpleMultiSelect({
+        source: '#callback_src',
+        destination: '#callback_dst',
+        adder: '#callback_adder',
+        remover: '#callback_remover'
+      }).on('option:added', function (e, $option) {
+        saveData();
+
+      }).on('option:removed', function (e, $option) {
+        saveData();
+      });
+
+      $('#add_item').click(function () {
+        var inputval = $('#input_add_item').val();
+        var exists = false;
+        $('#callback_src option').each(function (i, v) {
+          if ($(v).val() == inputval) {
+            alert('Item already added, Please add different item');
+            $('#input_add_item').val('');
+            exists = true;
+            return false;
+          }
+        });
+
+        $('#callback_dst option').each(function (i, v) {
+          if ($(v).val() == inputval) {
+            alert('Item already added, Please add different item');
+            $('#input_add_item').val('');
+            exists = true;
+            return false;
+          }
+        });
+
+        if (inputval != '' && !exists) {
+          $('#callback_src').append('<option value="' + inputval + '">' + inputval + '</option>');
+          $('#input_add_item').val('');
+          saveData();
+        }
+      });
+
+      function saveData() {
+        var src = [];
+        var dest = [];
+
+        $('#callback_src option').each(function (i, v) {
+          src.push($(v).val());
+        });
+
+        $('#callback_dst option').each(function (i, v) {
+          dest.push($(v).val());
+        });
+
+        var $j = jQuery.noConflict();
+        if (src != undefined && dest != undefined)
+          $.post(
+            'saveData.php',
+            { src, dest, 'l': 'save' },
+            function (data) {
+              data = JSON.parse(data);
+              $('#callback_src').html('');
+              $('#callback_dst').html('');
+              $(data['src']).each(function (i, v) {
+                $('#callback_src').append(v);
+              });
+
+              $(data['dest']).each(function (i, v) {
+                $('#callback_dst').append(v);
+              });
+            }
+          );
+      }
+
+      $(document).ready(function () {
+        var $j = jQuery.noConflict();
+        $.get('saveData.php', function (data) {
+          data = JSON.parse(data);
+          $(data['src']).each(function (i, v) {
+            $('#callback_src').append(v);
+          });
+
+          $(data['dest']).each(function (i, v) {
+            $('#callback_dst').append(v);
+          });
+        })
+      })
+
+
+    </script>
+  </div>
+
+</body>
+
+</html>
