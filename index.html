@@ -47,7 +47,7 @@
           <div><button type="button" id="callback_remover" class="btn btn-primary mb-1">&lt;</button></div>
         </div>
         <div>
-          <select id="callback_dst" multiple style="width: 7em; height: 10em;" class="form-control">
+          <select id="callback_dest" multiple style="width: 7em; height: 10em;" class="form-control">
           </select>
         </div>
       </div>
@@ -62,7 +62,7 @@
 
       $('#callback').simpleMultiSelect({
         source: '#callback_src',
-        destination: '#callback_dst',
+        destination: '#callback_dest',
         adder: '#callback_adder',
         remover: '#callback_remover'
       }).on('option:added', function (e, $option) {
@@ -84,7 +84,7 @@
           }
         });
 
-        $('#callback_dst option').each(function (i, v) {
+        $('#callback_dest option').each(function (i, v) {
           if ($(v).val() == inputval) {
             alert('Item already added, Please add different item');
             $('#input_add_item').val('');
@@ -108,7 +108,7 @@
           src.push($(v).val());
         });
 
-        $('#callback_dst option').each(function (i, v) {
+        $('#callback_dest option').each(function (i, v) {
           dest.push($(v).val());
         });
 
@@ -120,13 +120,13 @@
             function (data) {
               data = JSON.parse(data);
               $('#callback_src').html('');
-              $('#callback_dst').html('');
+              $('#callback_dest').html('');
               $(data['src']).each(function (i, v) {
                 $('#callback_src').append(v);
               });
 
               $(data['dest']).each(function (i, v) {
-                $('#callback_dst').append(v);
+                $('#callback_dest').append(v);
               });
             }
           );
@@ -141,7 +141,7 @@
           });
 
           $(data['dest']).each(function (i, v) {
-            $('#callback_dst').append(v);
+            $('#callback_dest').append(v);
           });
         })
       })

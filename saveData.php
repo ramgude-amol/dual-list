@@ -34,6 +34,10 @@ function saveData(){
         $db->query($sql);
     }
     
+	if( empty($_POST['src'])){
+		$db->query("TRUNCATE TABLE dual_list_src");
+	}
+	
     if(!empty($_POST['dest'])){
         $sql = "INSERT INTO dual_list_dest(dest) values";
         foreach($_POST['dest'] as $e){
@@ -43,6 +47,10 @@ function saveData(){
         $db->query("TRUNCATE TABLE dual_list_dest");
         $db->query($sql);
     }
+	
+	if(empty($_POST['dest'])){
+		$db->query("TRUNCATE TABLE dual_list_dest");
+	}
 }
 
 function fetchData($db){
