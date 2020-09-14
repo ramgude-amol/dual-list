@@ -1,4 +1,6 @@
-
+// This project shows one pager application with 1 text box ,button and 2 list box
+// text from text box will be added to 1 list box on button click
+// and all data from both list box will be saved to MySQL db on change of list box content
 1. use git clone https://github.com/ramgudeamol/dual-list
    Keep all files at PATH/htdocs/dual-list/
    
